@@ -8,6 +8,16 @@
   width: 100vw;
   overflow-x: hidden;
 }
+.form{
+  width: 100vh;
+}
+#form{
+  align-items: center;
+  position: fixed;
+  bottom: 20px;
+  display: flex;
+  
+}
 
 .app__left {
   background-color: #505170;
@@ -130,8 +140,15 @@
     height: 3px;
     border-radius: 50%;
 }
-.container {
-  max-width: 618px;
+.form{
+  width: 49vh;
+
+}
+#form{
+  align-items: center;
+  bottom: 20px;
+  display: flex;
+  
 }
 
 }
