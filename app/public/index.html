@@ -1,80 +1,81 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>Socket.IO chat</title>
-    <style>
-      body { margin: 0; padding-bottom: 3rem; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-
-      #form { background: rgba(0, 0, 0, 0.15); padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
-      #input { border: none; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem; }
-      #input:focus { outline: none; }
-      #form > button { background: #333; border: none; padding: 0 1rem; margin: 0.25rem; border-radius: 3px; outline: none; color: #fff; }
-
-      #messages { list-style-type: none; margin: 0; padding: 0; }
-      #messages > li { padding: 0.5rem 1rem; }
-      #messages > li:nth-child(odd) { background: #efefef; }
-    </style>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Join Room</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
+      integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w=="
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="/css/index.css" />
   </head>
+
   <body>
-    <ul id="messages"></ul>
-    <div id="message"></div>
-    <form id="form" action="">
-      <input id="input" autocomplete="off" />
-      <button>Send</button>
-      <button type="button" id="btn-location">Address</button>
-    </form>
+    <main class="app">
+      <h1 class="text-center">
+        <span class="title-app"> MYChat </span>
+      </h1>
+      <section class="chat-app container">
+
+        <div>
+          <div class="container">
+            <form action="./chat.html" class="form">
+              <p id="heading">Join Room</p>
+              <div class="field">
+
+                <i class="fa-solid fa-house "></i>
+                <input class="input-field" type="text"
+                name="room"
+                id="room"
+                placeholder="room"
+                >
+              </div>
+              <div class="field">
+                <i class="fa-solid fa-user"></i>
+                <input
+                class="input-field" 
+                type="text"
+                name="username"
+                id="username"
+                placeholder="username">
+              </div>
+              
+              <button type="submit" class="button3">To Rooms</button>
+          </form>
+          </div>
+        </div>
+        
+      </section>
+    </main>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
   </body>
-  <script src="/socket.io/socket.io.js"></script>
-<script>
-  const socket = io();
-  const form = document.getElementById('form');
-  const input = document.getElementById('input');
-  const messages = document.getElementById('messages');
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const bad = (e)=>{
-     if(e){
-       return alert(e);
-     }
-     console.log("send message ")
-    }
-    if (input.value) {
-
-      socket.emit('chat message', input.value,bad);
-      input.value = '';
-    }
-  });
-
-  socket.on('welcome',(a)=>{
-    console.log(a);
-  })
-
-  socket.on('Message', (msg) => {
-    console.log(msg);
-    const item = document.createElement('li');
-    item.textContent = msg.msg + "  "+msg.time;
-    messages.appendChild(item);
-    window.scrollTo(0, document.body.scrollHeight);
-  });
-  //share address
-  document.getElementById("btn-location").addEventListener("click",()=>{
-    if(!navigator.geolocation){
-      return alert("Error browser")
-    }
-    navigator.geolocation.getCurrentPosition((position)=>{
-      console.log(position);
-      const {latitude,longitude} = position.coords;
-      socket.emit('share location',{latitude,longitude});
-    })
-  })
-  
-  socket.on("share location form sever",(location)=>{
-    const item = document.createElement('a');
-  item.textContent = 'My Address'; // Text bạn muốn hiển thị cho liên kết
-  item.href = location; // Đặt đường dẫn cho liên kết
-  messages.appendChild(item);
-  window.scrollTo(0, document.body.scrollHeight);
-  })
-</script>
 </html>

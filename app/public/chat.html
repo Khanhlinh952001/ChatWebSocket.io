@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
+      integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w=="
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="./css/chat.css">
+    
+    <title>Socket.IO chat</title>
+    <style>
+      body { margin: 0; padding-bottom: 3rem; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+      #form{
+        align-items: center;
+        position: fixed;
+        bottom: 20px;
+        display: flex;
+        width: 100vh;
+      }
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages > li { padding: 0.5rem 1rem; }
+      #messages > li:nth-child(odd) { background: #efefef; text-align: end; }
+    </style>
+  </head>
+  <body>
+    <main  class="row app" style="display: flex;">
+      <section class="col-md-3 col-sm-4 app__left">
+        <h1 class="text-center">
+          <span class="app__title" id="app__title">CyberChat</span>
+        </h1>
+        <div class="app__title--line"></div>
+        <div class="app__list-user">
+          <ul class="app__list-user--content" id="app__list-user--content">
+           <li class="app__item-user">Cras justo odio</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="col-md-9 col-sm-8 app__right">
+        <ul id="messages">
+
+        </ul>
+
+        
+        <div class="app__send-messages">
+          <form id="form" action="">
+            <input style="flex: 1;" type="text" class="form-control" id="input" autocomplete="off">
+            <button class="btn btn-success">Send</button>
+            <button type="button" id="btn-location" class="btn btn-warning">Address</button>
+          </form>
+        </div>
+      
+     </section>
+
+       
+    </main>
+  
+   
+  </body>
+  <script
+  src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+  integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+  crossorigin="anonymous"
+></script>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+  integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+  crossorigin="anonymous"
+></script>
+<script
+  src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+  integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+  crossorigin="anonymous"
+></script>
+<script src="/socket.io/socket.io.js"></script>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.9.6/qs.min.js"
+  integrity="sha512-3TmPrquYLaAsUmZKXRARTDC5siWhLAdBVqNo4dWpDABBtLU62AaoTaQJEvjxjExcZYurO6i1dnK85k8pPIBlRg=="
+  crossorigin="anonymous"
+></script>
+<script>
+  const socket = io();
+  const form = document.getElementById('form');
+  const input = document.getElementById('input');
+  const messages = document.getElementById('messages');
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const bad = (e)=>{
+     if(e){
+       return alert(e);
+     }
+     console.log("send message ")
+    }
+    if (input.value) {
+
+      socket.emit('chat message', input.value,bad);
+      input.value = '';
+    }
+  });
+
+  socket.on('welcome',(a)=>{
+   //alert("Welcome to " + a + " room")
+  })
+  socket.on('welcomex',(a)=>{
+   // alert( a + " online")
+  }) 
+
+  socket.on('Message', (msg) => {
+    console.log(msg);
+
+    const item = document.createElement('li');
+    const h2Element = document.createElement('h2');
+    const spanElement = document.createElement('span');
+    const spanElement1 = document.createElement('span');
+    item.classList.add('list-group');
+    h2Element.textContent = msg.msg;
+    spanElement.textContent = msg.time;
+    spanElement1.textContent = msg.username;
+    item.appendChild(h2Element);
+    item.appendChild(spanElement);
+    item.appendChild(spanElement1);
+    messages.appendChild(item);
+   
+   
+    window.scrollTo(0, document.body.scrollHeight);
+  });
+ 
+  //share address
+  document.getElementById("btn-location").addEventListener("click",()=>{
+    if(!navigator.geolocation){
+      return alert("Error browser")
+    }
+    navigator.geolocation.getCurrentPosition((position)=>{
+      console.log(position);
+      const {latitude,longitude} = position.coords;
+      socket.emit('share location',{latitude,longitude});
+    })
+  })
+  
+  socket.on("share location form sever",(location)=>{
+    const item = document.createElement('a');
+  item.textContent = location; // Text bạn muốn hiển thị cho liên kết
+  item.href = location; // Đặt đường dẫn cho liên kết
+  messages.appendChild(item);
+  window.scrollTo(0, document.body.scrollHeight);
+  })
+
+  //lay ten room and user
+  const queryString = location.search;
+  const params = Qs.parse(queryString,{
+    ignoreQueryPrefix:true
+  });
+  const {room, username} = params;
+  socket.emit('JoinRoom',{room , username});
+  document.getElementById("app__title").innerHTML = room;
+
+  //nhan user online
+ socket.on("user online",(user)=>{
+    console.log(user);
+    let htmlContent = "";
+    user.map((user)=>{
+      htmlContent +=  `<li class="app__item-user">${user.username}</li>`;
+    })
+    document.getElementById("app__list-user--content").innerHTML = htmlContent;
+  })
+  
+</script>
+</html>
+
+
+
+
+
