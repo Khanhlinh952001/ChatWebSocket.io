@@ -44,20 +44,22 @@ socket.on('welcomex', (a) => {
 socket.on('Message', (msg) => {
   console.log(msg);
 
-  const item = document.createElement('li');
-  const pElement = document.createElement('p');
-  const spanElement = document.createElement('span');
-  const spanElement1 = document.createElement('strong');
-  item.classList.add('list-group');
-  spanElement.classList.add('list-span');
-  spanElement1.classList.add('p');
-  pElement.textContent = msg.msg;
-  spanElement.textContent = msg.time;
-  spanElement1.textContent = msg.username;
-  item.appendChild(spanElement1);
-  item.appendChild(pElement);
-  item.appendChild(spanElement);
-  messages.appendChild(item);
+  const met = document.querySelector("#app__messages");
+  const content = document.getElementById("app__messages");
+  
+  content.innerHTML += `
+    <div class="message-item">
+      <div class="message__row1">
+        <p class="message__name">${msg.username}</p>
+        <p class="message__date">${msg.time}</p>
+      </div>
+      <div class="message__row2">
+        <p class="message__content">
+          ${msg.msg}
+        </p>
+      </div>
+    </div>
+  `;
 
   // Cuộn xuống dưới cùng của trang để xem tin nhắn mới nhất
   window.scrollTo(0, document.body.scrollHeight);
@@ -104,10 +106,9 @@ document.getElementById("app__title").innerHTML = room;
 // Lắng nghe sự kiện 'user online' từ server khi có người dùng mới tham gia hoặc rời phòng
 socket.on("user online", (user) => {
   console.log(user);
-  let htmlContent = "";
   user.map((user) => {
     // Hiển thị danh sách người dùng online
-    htmlContent += `<li class="app__item-user">${user.username}</li>`;
+   const listUser = document.querySelector("#app__list-user--content")
+   listUser.innerHTML += `<li class="app__item-user">${user.username}</li>`
   })
-  document.getElementById("app__list-user--content").innerHTML = htmlContent;
 });
