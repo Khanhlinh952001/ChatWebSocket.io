@@ -14,13 +14,6 @@ const { getUserList, addUser, removeUser } = require('./app/public/utils/user')
 app.use(express.static(path.join(__dirname, './app/public')));
 
 
-// Định tuyến cho trang chủ
-app.get('/', (req, res) => {
-  // Render trang chủ
-  res.sendFile( './app/public/chat.html');
-});
-
-
 // Sự kiện xảy ra khi có người dùng kết nối đến server
 io.on('connection', (socket) => {
   console.log('Người dùng đã kết nối');
