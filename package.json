@@ -1,10 +1,10 @@
 {
-  "name": "chatwebsocket.io",
+  "name": "chatwebsocket",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "start": "nodemon --inspect server.js",
+    "start": "nodemon --inspect app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

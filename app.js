@@ -10,8 +10,9 @@ const io = new Server(server);
 const format = require('date-format');
 const { getUserList, addUser, removeUser } = require('./app/public/utils/user')
 
+const libkd = path.join(__dirname, './app/public');
 // Sử dụng thư mục public để phục vụ các tệp tĩnh
-app.use(express.static(path.join(__dirname, './app/public')));
+app.use(express.static(libkd));
 
 
 // Sự kiện xảy ra khi có người dùng kết nối đến server
