@@ -8,8 +8,12 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server);
 const format = require('date-format');
-const {getUserList,addUser,removeUser} = require('../public/utils/user')
-app.use(express.static(path.join(__dirname, '../public')));
+const {getUserList,addUser,removeUser} = require('./app/public/utils/user')
+app.use(express.static(path.join(__dirname, './app/public')));
+
+app.get('/', (req, res) => {
+  res.render('./app/public/index.html')
+})
 
 io.on('connection', (socket) => {
   console.log('a user connected');
@@ -17,7 +21,7 @@ io.on('connection', (socket) => {
   socket.on("JoinRoom",({room,username})=>{
     socket.join(room);  
     //chao
-    socket.emit("welcome", room);
+    socket.emit("welcome", (room,username));
     socket.broadcast.to(room).emit("welcomex", username);
   //chat
    socket.on('chat message', (msg,callback) => {
