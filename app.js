@@ -14,6 +14,7 @@ const io = new Server(server, {
     methods: ['GET', 'POST'],
   },
 });
+const cors = require('cors');
 const format = require('date-format');
 const { getUserList, addUser, removeUser } = require('./app/public/utils/user');
 
