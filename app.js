@@ -6,6 +6,7 @@ const path = require('path');
 const Filter = require('bad-words');
 const app = express();
 const server = createServer(app);
+const cors = require('cors');
 const io = new Server(server, {
   connectionStateRecovery: {},
   cors: {
@@ -19,6 +20,7 @@ const { getUserList, addUser, removeUser } = require('./app/public/utils/user');
 // Đường dẫn đến thư mục chứa các tệp tĩnh như CSS, JS, v.v.
 const libkd = path.join(__dirname, './app/public');
 app.use(express.static(libkd));
+app.use(cors());
 
 // Sự kiện xảy ra khi có người dùng kết nối đến server
 io.on('connection', (socket) => {

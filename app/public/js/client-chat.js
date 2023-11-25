@@ -1,5 +1,10 @@
 // Tạo một đối tượng socket để kết nối với máy chủ
-const socket = io();
+const socket = io('https://chat-web-socket-6s40q3kak-anhlinhcoders-projects.vercel.app/'
+,{
+  transports: ['polling'],
+  pingInterval: 10000, // Set a longer ping interval (milliseconds)
+  pingTimeout: 5000,   // Set a longer ping timeout (milliseconds)
+});
 const form = document.getElementById('form');
 const input = document.getElementById('input');
 const messages = document.getElementById('messages');
