@@ -32,7 +32,7 @@ socket.on('welcome', (username) => {
     <div class="message-itemx">
       <div class="message__row1">
         <p class="message__name">Chào bạn ${username} cảm ơn đã tham gia</p>
-      </dgia
+      </div>
     </div>
   `;
 });
@@ -45,7 +45,7 @@ socket.on('welcomex', (username) => {
     <div class="message-itemx">
       <div class="message__row1">
         <p class="message__name"> ${username} Đã tham gia nhóm</p>
-      </dgia
+      </div>
     </div>
   `;
 });

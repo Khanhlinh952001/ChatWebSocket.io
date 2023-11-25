@@ -8,6 +8,10 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, {
   connectionStateRecovery: {},
+  cors: {
+    origin: 'http://your-client-domain.com',
+    methods: ['GET', 'POST'],
+  },
 });
 const format = require('date-format');
 const { getUserList, addUser, removeUser } = require('./app/public/utils/user');
