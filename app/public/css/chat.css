@@ -46,8 +46,24 @@
   padding-left: 23px;
   border-radius: 20px;
 }
+.message-itemx {
+  margin: 15px 30px;
+  background-color: rgb(36, 214, 48);
+  padding-left: 100px;
+  border-radius: 20px;
+  text-align: center;
+}
+.message-itemx:nth-child(odd) {
+  margin: 15px 30px;
+  background-color: rgb(36, 214, 48);
+  padding-left: 100px;
+  border-radius: 20px;
+  text-align: center;
+}
+
+
 .message-item:nth-child(odd){
-  background-color: #04abff;
+  background-color:#04abff;
 }
 .message__row1 {
   display: flex;

@@ -1,19 +1,20 @@
 const express = require('express');
-const { createServer } = require('node:http');
-const { join } = require('node:path');
+const { createServer } = require('http');
+const { join } = require('path');
 const { Server } = require('socket.io');
 const path = require('path');
 const Filter = require('bad-words');
 const app = express();
 const server = createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  connectionStateRecovery: {},
+});
 const format = require('date-format');
-const { getUserList, addUser, removeUser } = require('./app/public/utils/user')
+const { getUserList, addUser, removeUser } = require('./app/public/utils/user');
 
+// Đường dẫn đến thư mục chứa các tệp tĩnh như CSS, JS, v.v.
 const libkd = path.join(__dirname, './app/public');
-// Sử dụng thư mục public để phục vụ các tệp tĩnh
 app.use(express.static(libkd));
-
 
 // Sự kiện xảy ra khi có người dùng kết nối đến server
 io.on('connection', (socket) => {
@@ -21,11 +22,17 @@ io.on('connection', (socket) => {
 
   // Sự kiện khi một người dùng tham gia một phòng cụ thể
   socket.on("JoinRoom", ({ room, username }) => {
+    // Kiểm tra xem tên người dùng và tên phòng có giá trị không trống không
+    if (!username || !room) {
+      // Xử lý khi tên người dùng hoặc tên phòng không hợp lệ
+      return;
+    }
+
     // Người dùng tham gia vào phòng
     socket.join(room);
 
     // Gửi thông báo chào mừng cho người dùng vừa tham gia
-    socket.emit("welcome",  username );
+    socket.emit("welcome", username);
 
     // Gửi thông báo chào mừng đến tất cả người dùng trong phòng (ngoại trừ người gửi)
     socket.broadcast.to(room).emit("welcomex", username);
@@ -53,7 +60,7 @@ io.on('connection', (socket) => {
       // Tạo một liên kết đến trang Google Maps với vị trí đã chia sẻ
       const link = `http://www.google.com/maps?q=${latitude},${longitude}`;
       // Gửi liên kết đến tất cả người dùng trong phòng
-      io.to(room).emit('share location form sever', link ,username);
+      io.to(room).emit('share location form sever', link, username);
     });
 
     // Thêm thông tin người dùng mới vào danh sách
@@ -78,10 +85,8 @@ io.on('connection', (socket) => {
   });
 });
 
-// Lắng nghe cổng 3000
-
-const port = process.env.PORT || 3000;
-
-  server.listen(port, () => {
-    console.log(`server running at http://localhost:${port}`);
-  });
+const port = process.env.PORT || 3000 ;
+server.listen(port, () => {
+  console.log(`server running at http://localhost:${port}`);
+});
+// Lắng nghe cổng được chọn hoặc cổng 3000 nếu không có cổng nào được cung cấp
