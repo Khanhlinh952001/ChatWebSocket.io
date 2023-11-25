@@ -1,7 +1,7 @@
 {
     "version": 2,
     "name": "ChatMessage",
-    "builds": [
+      "builds": [
        { "src": "app.js", "use": "@vercel/node" }
     ],
     "routes": [
