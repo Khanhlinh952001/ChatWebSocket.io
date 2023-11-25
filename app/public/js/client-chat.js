@@ -4,49 +4,46 @@ const form = document.getElementById('form');
 const input = document.getElementById('input');
 const messages = document.getElementById('messages');
 
-// Bắt sự kiện khi form được submit
-form.addEventListener('submit', (e) => {
-  e.preventDefault();
-
-  // Hàm callback để xử lý thông báo lỗi từ server
-  const bad = (e) => {
-    if (e) {
-      return alert(e);
-    }
-    console.log("Gửi tin nhắn");
+// Hàm callback để xử lý thông báo lỗi từ server
+const handleSendMessageError = (error) => {
+  if (error) {
+    alert(`Error sending message: ${error}`);
+  } else {
+    console.log("Message sent");
   }
+};
 
-  if (input.value) {
+// Bắt sự kiện khi form được submit
+form.addEventListener('submit', (event) => {
+  event.preventDefault();
+
+  if (input.value.trim()) {
     // Gửi sự kiện 'chat message' với nội dung tin nhắn và hàm callback
-    socket.emit('chat message', input.value, bad);
+    socket.emit('chat message', input.value, handleSendMessageError);
     input.value = ''; // Xóa nội dung input sau khi gửi tin nhắn
   }
 });
 
 // Lắng nghe sự kiện 'welcome' từ server khi người dùng tham gia phòng
-socket.on('welcome', (a) => {
-  console.log(a);
+socket.on('welcome', (username) => {
   const item = document.createElement('li');
-  item.textContent = "Chào Mừng " + a + " đến với phòng";
+  item.textContent = `Chào mừng ${username} đến với phòng`;
   item.classList.add('headerxx');
   messages.appendChild(item);
 });
 
 // Lắng nghe sự kiện 'welcomex' từ server khi có người mới tham gia phòng
-socket.on('welcomex', (a) => {
+socket.on('welcomex', (username) => {
   const item = document.createElement('li');
   item.classList.add('headerxx');
-  item.textContent = a + " Đã được thêm";
+  item.textContent = `${username} đã được thêm`;
   messages.appendChild(item);
 });
 
 // Lắng nghe sự kiện 'Message' từ server khi có tin nhắn mới
 socket.on('Message', (msg) => {
-  console.log(msg);
-
-  const met = document.querySelector("#app__messages");
   const content = document.getElementById("app__messages");
-  
+
   content.innerHTML += `
     <div class="message-item">
       <div class="message__row1">
@@ -73,19 +70,24 @@ document.getElementById("btn-location").addEventListener("click", () => {
 
   // Lấy vị trí hiện tại của người dùng
   navigator.geolocation.getCurrentPosition((position) => {
-    console.log(position);
     const { latitude, longitude } = position.coords;
     // Gửi sự kiện 'share location' với thông tin vị trí đến server
     socket.emit('share location', { latitude, longitude });
-  })
+  });
 });
 
 // Lắng nghe sự kiện 'share location form sever' từ server khi có ai đó chia sẻ vị trí
-socket.on("share location form sever", (location) => {
-  const item = document.createElement('a');
-  item.textContent = location; // Text bạn muốn hiển thị cho liên kết
-  item.href = location; // Đặt đường dẫn cho liên kết
-  messages.appendChild(item);
+socket.on("share location form sever", (location, username) => {
+  const content = document.getElementById("app__messages");
+
+  content.innerHTML += `
+    <div class="message-item">
+      <div class="message__row1">
+        <p class="message__name">${username}</p>
+        <a href="${location}" class="message__date">${location}</a>
+      </div>
+    </div>
+  `;
   // Cuộn xuống dưới cùng của trang để xem tin nhắn mới nhất
   window.scrollTo(0, document.body.scrollHeight);
 });
@@ -104,11 +106,12 @@ socket.emit('JoinRoom', { room, username });
 document.getElementById("app__title").innerHTML = room;
 
 // Lắng nghe sự kiện 'user online' từ server khi có người dùng mới tham gia hoặc rời phòng
-socket.on("user online", (user) => {
-  console.log(user);
-  user.map((user) => {
+socket.on("user online", (users) => {
+  const listUser = document.querySelector("#app__list-user--content");
+  listUser.innerHTML = ""; // Clear existing list
+
+  users.forEach((user) => {
     // Hiển thị danh sách người dùng online
-   const listUser = document.querySelector("#app__list-user--content")
-   listUser.innerHTML += `<li class="app__item-user">${user.username}</li>`
-  })
+    listUser.innerHTML += `<li class="app__item-user">${user.username}</li>`;
+  });
 });
