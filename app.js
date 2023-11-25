@@ -13,13 +13,14 @@ const io = new Server(server, {
     methods: ['GET', 'POST'],
   },
 });
+const cors = require('cors');
 const format = require('date-format');
 const { getUserList, addUser, removeUser } = require('./app/public/utils/user');
 
 // Đường dẫn đến thư mục chứa các tệp tĩnh như CSS, JS, v.v.
 const libkd = path.join(__dirname, './app/public');
 app.use(express.static(libkd));
-
+app.use(cors());
 // Sự kiện xảy ra khi có người dùng kết nối đến server
 io.on('connection', (socket) => {
   console.log('Người dùng đã kết nối');
