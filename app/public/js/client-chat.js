@@ -4,46 +4,49 @@ const form = document.getElementById('form');
 const input = document.getElementById('input');
 const messages = document.getElementById('messages');
 
-// Hàm callback để xử lý thông báo lỗi từ server
-const handleSendMessageError = (error) => {
-  if (error) {
-    alert(`Error sending message: ${error}`);
-  } else {
-    console.log("Message sent");
-  }
-};
-
 // Bắt sự kiện khi form được submit
-form.addEventListener('submit', (event) => {
-  event.preventDefault();
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
 
-  if (input.value.trim()) {
+  // Hàm callback để xử lý thông báo lỗi từ server
+  const bad = (e) => {
+    if (e) {
+      return alert(e);
+    }
+    console.log("Gửi tin nhắn");
+  }
+
+  if (input.value) {
     // Gửi sự kiện 'chat message' với nội dung tin nhắn và hàm callback
-    socket.emit('chat message', input.value, handleSendMessageError);
+    socket.emit('chat message', input.value, bad);
     input.value = ''; // Xóa nội dung input sau khi gửi tin nhắn
   }
 });
 
 // Lắng nghe sự kiện 'welcome' từ server khi người dùng tham gia phòng
-socket.on('welcome', (username) => {
+socket.on('welcome', (a) => {
+  console.log(a);
   const item = document.createElement('li');
-  item.textContent = `Chào mừng ${username} đến với phòng`;
+  item.textContent = "Chào Mừng " + a + " đến với phòng";
   item.classList.add('headerxx');
   messages.appendChild(item);
 });
 
 // Lắng nghe sự kiện 'welcomex' từ server khi có người mới tham gia phòng
-socket.on('welcomex', (username) => {
+socket.on('welcomex', (a) => {
   const item = document.createElement('li');
   item.classList.add('headerxx');
-  item.textContent = `${username} đã được thêm`;
+  item.textContent = a + " Đã được thêm";
   messages.appendChild(item);
 });
 
 // Lắng nghe sự kiện 'Message' từ server khi có tin nhắn mới
 socket.on('Message', (msg) => {
-  const content = document.getElementById("app__messages");
+  console.log(msg);
 
+  const met = document.querySelector("#app__messages");
+  const content = document.getElementById("app__messages");
+  
   content.innerHTML += `
     <div class="message-item">
       <div class="message__row1">
@@ -70,16 +73,17 @@ document.getElementById("btn-location").addEventListener("click", () => {
 
   // Lấy vị trí hiện tại của người dùng
   navigator.geolocation.getCurrentPosition((position) => {
+    console.log(position);
     const { latitude, longitude } = position.coords;
     // Gửi sự kiện 'share location' với thông tin vị trí đến server
-    socket.emit('share location', { latitude, longitude });
-  });
+    socket.emit('share location', { latitude, longitude  });
+  })
 });
 
 // Lắng nghe sự kiện 'share location form sever' từ server khi có ai đó chia sẻ vị trí
-socket.on("share location form sever", (location, username) => {
+socket.on("share location form sever", (location,username) => {
   const content = document.getElementById("app__messages");
-
+  
   content.innerHTML += `
     <div class="message-item">
       <div class="message__row1">
@@ -106,12 +110,11 @@ socket.emit('JoinRoom', { room, username });
 document.getElementById("app__title").innerHTML = room;
 
 // Lắng nghe sự kiện 'user online' từ server khi có người dùng mới tham gia hoặc rời phòng
-socket.on("user online", (users) => {
-  const listUser = document.querySelector("#app__list-user--content");
-  listUser.innerHTML = ""; // Clear existing list
-
-  users.forEach((user) => {
+socket.on("user online", (user) => {
+  console.log(user);
+  user.map((user) => {
     // Hiển thị danh sách người dùng online
-    listUser.innerHTML += `<li class="app__item-user">${user.username}</li>`;
-  });
+   const listUser = document.querySelector("#app__list-user--content")
+   listUser.innerHTML += `<li class="app__item-user">${user.username}</li>`
+  })
 });
